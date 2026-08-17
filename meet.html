@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meet link generator — HOF Migration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#16205E;
+    --royal:#243A9E;
+    --steel:#868E9B;
+    --surface:#F4F6FB;
+    --card:#FFFFFF;
+    --line:#E2E6F0;
+    --ink:#1A1F36;
+    --good:#0F7B4F;
+    --good-bg:#E9F6F0;
+    --bad:#B3261E;
+    --bad-bg:#FCEEED;
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    background:var(--surface);
+    color:var(--ink);
+    font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:660px;margin:0 auto;padding:28px 20px 64px}
+
+  /* ---- header + tabs ---- */
+  header{margin-bottom:22px}
+
+  .brand{
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--royal);
+    margin:0 0 6px;
+  }
+
+  h1{
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:-.02em;
+    margin:0 0 4px;
+    color:var(--navy);
+  }
+
+  .sub{margin:0;color:var(--steel);font-size:14px;line-height:1.5}
+
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    margin:20px 0 0;
+    padding:4px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+  }
+
+  nav.tabs a{
+    flex:1;
+    text-align:center;
+    padding:10px 12px;
+    border-radius:9px;
+    font-size:14px;
+    font-weight:600;
+    text-decoration:none;
+    color:var(--steel);
+    transition:background .15s,color .15s;
+  }
+
+  nav.tabs a:hover{color:var(--navy);background:var(--surface)}
+
+  nav.tabs a[aria-current="page"]{
+    background:var(--navy);
+    color:#fff;
+  }
+
+  nav.tabs a:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
+
+  /* ---- card ---- */
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px;
+    margin-top:18px;
+  }
+
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--navy);
+    margin-bottom:7px;
+  }
+
+  .hint{
+    display:block;
+    font-weight:400;
+    font-size:12px;
+    color:var(--steel);
+    margin-top:5px;
+    line-height:1.5;
+  }
+
+  select,input[type=url],input[type=text]{
+    width:100%;
+    padding:12px 13px;
+    font-family:inherit;
+    font-size:15px;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    transition:border-color .15s,box-shadow .15s;
+  }
+
+  select:focus,input:focus{
+    outline:none;
+    border-color:var(--royal);
+    box-shadow:0 0 0 3px rgba(36,58,158,.14);
+  }
+
+  .field + .field{margin-top:18px}
+
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    transition:background .15s,opacity .15s;
+  }
+
+  .primary{
+    width:100%;
+    margin-top:22px;
+    padding:14px;
+    font-size:15px;
+    background:var(--navy);
+    color:#fff;
+  }
+
+  .primary:hover:not(:disabled){background:var(--royal)}
+  .primary:disabled{opacity:.55;cursor:not-allowed}
+  button:focus-visible{outline:2px solid var(--royal);outline-offset:2px}
+
+  /* ---- result ---- */
+  .result{display:none;margin-top:18px}
+  .result.show{display:block}
+
+  .result-head{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:16px;
+  }
+
+  .badge{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--good);
+    background:var(--good-bg);
+    padding:4px 9px;
+    border-radius:6px;
+  }
+
+  .titleline{font-size:15px;font-weight:600;color:var(--navy)}
+
+  .linkbox{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 13px;
+  }
+
+  .linkbox code{
+    flex:1;
+    font-family:'DM Mono',ui-monospace,monospace;
+    font-size:14px;
+    color:var(--navy);
+    word-break:break-all;
+    line-height:1.4;
+  }
+
+  .copy{
+    flex:none;
+    padding:9px 15px;
+    font-size:13px;
+    background:var(--royal);
+    color:#fff;
+  }
+
+  .copy:hover{background:var(--navy)}
+  .copy.done{background:var(--good)}
+
+  .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+
+  .ghost{
+    padding:10px 16px;
+    font-size:13px;
+    background:#fff;
+    color:var(--navy);
+    border:1px solid var(--line);
+    text-decoration:none;
+    display:inline-block;
+  }
+
+  .ghost:hover{background:var(--surface)}
+
+  .notice{
+    margin-top:16px;
+    padding:12px 14px;
+    background:var(--surface);
+    border-left:3px solid var(--royal);
+    border-radius:0 8px 8px 0;
+    font-size:13px;
+    line-height:1.6;
+    color:var(--ink);
+  }
+
+  .error{
+    display:none;
+    margin-top:18px;
+    padding:14px;
+    background:var(--bad-bg);
+    border:1px solid rgba(179,38,30,.2);
+    border-radius:10px;
+    color:var(--bad);
+    font-size:14px;
+    line-height:1.55;
+  }
+
+  .error.show{display:block}
+
+  footer{
+    margin-top:26px;
+    text-align:center;
+    font-size:12px;
+    color:var(--steel);
+    line-height:1.6;
+  }
+
+  .spin{
+    display:inline-block;
+    width:14px;height:14px;
+    margin-right:8px;
+    vertical-align:-2px;
+    border:2px solid rgba(255,255,255,.35);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+  }
+
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+
+  @media (max-width:520px){
+    .wrap{padding:20px 14px 48px}
+    h1{font-size:22px}
+    .card{padding:18px}
+    .linkbox{flex-direction:column;align-items:stretch}
+    .copy{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="brand">HOF Migration</p>
+    <h1>Client meeting tools</h1>
+    <p class="sub">Generate a recorded Google Meet link for a client call, or book a Dubai office visit.</p>
+
+    <nav class="tabs">
+      <a href="index.html">Dubai office visits</a>
+      <a href="meet.html" aria-current="page">Meet link generator</a>
+    </nav>
+  </header>
+
+  <div class="card">
+    <div class="field">
+      <label for="consultant">Your name</label>
+      <select id="consultant">
+        <option value="">Select your name</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="hubspot">HubSpot deal or contact link</label>
+      <input id="hubspot" type="url" inputmode="url" autocomplete="off"
+             placeholder="https://app.hubspot.com/contacts/23735726/record/0-3/...">
+      <span class="hint">Open the deal or contact in HubSpot and copy the address from your browser bar. Either works.</span>
+    </div>
+
+    <button class="primary" id="go">Generate meeting link</button>
+
+    <div class="error" id="error" role="alert"></div>
+
+    <div class="result" id="result">
+      <div class="result-head">
+        <span class="badge">Ready</span>
+        <span class="titleline" id="titleline"></span>
+      </div>
+
+      <div class="linkbox">
+        <code id="link"></code>
+        <button class="copy" id="copy">Copy</button>
+      </div>
+
+      <div class="actions">
+        <a class="ghost" id="open" href="#" target="_blank" rel="noopener">Open in Meet</a>
+        <a class="ghost" id="record" href="#" target="_blank" rel="noopener">View in HubSpot</a>
+      </div>
+
+      <div class="notice">
+        Send this link to the client. A notetaker joins to record the call, so admit it
+        when it asks. Tell the client the call is recorded for quality and record keeping.
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Every link generated here is logged with your name, the client, and the time.
+  </footer>
+
+</div>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * CONFIG — fill these two in, then commit.
+ * ------------------------------------------------------------------ */
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbw08RhhNO6NN4ydhM3-A1KdCHIPU1ZhWhMrF3GQNgubulnXCTERpLjQrBsqjDHYNxg5BA/exec';
+const TOKEN    = '1q2w3e4r5t6y7u8i9o0p';
+
+/* Add or remove names here. Order is what consultants see. */
+const CONSULTANTS = [
+  'Bushra Sajjad',
+  'Brenda Murowanidzwa',
+  'Yamina Sadi',
+  'Ali Tariq',
+  'Iesha Rehman',
+  'Anwar Saeed',
+  'Tamjeed Zahid',
+  'Thushara M S',
+  'Rahima Nabili',
+  'Warda Badar'
+];
+/* ------------------------------------------------------------------ */
+
+const $ = id => document.getElementById(id);
+const sel = $('consultant');
+const btn = $('go');
+const errBox = $('error');
+const resBox = $('result');
+
+CONSULTANTS.forEach(n => {
+  const o = document.createElement('option');
+  o.value = n; o.textContent = n;
+  sel.appendChild(o);
+});
+
+/* Remember the name so nobody re-picks it forty times a week. */
+const saved = localStorage.getItem('hof_consultant');
+if (saved && CONSULTANTS.includes(saved)) sel.value = saved;
+sel.addEventListener('change', () => localStorage.setItem('hof_consultant', sel.value));
+
+function fail(msg){
+  errBox.textContent = msg;
+  errBox.classList.add('show');
+  resBox.classList.remove('show');
+}
+
+function busy(on){
+  btn.disabled = on;
+  btn.innerHTML = on
+    ? '<span class="spin"></span>Generating'
+    : 'Generate meeting link';
+}
+
+btn.addEventListener('click', async () => {
+  errBox.classList.remove('show');
+  resBox.classList.remove('show');
+
+  const consultant = sel.value;
+  const hubspotUrl = $('hubspot').value.trim();
+
+  if (!consultant) return fail('Select your name first.');
+  if (!hubspotUrl)  return fail('Paste the HubSpot deal or contact link.');
+  if (!/record\/0-(1|3)\/\d+/.test(hubspotUrl)) {
+    return fail('That link is not a deal or contact record. Open the record in HubSpot and copy the address bar.');
+  }
+
+  busy(true);
+
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      // text/plain keeps this a simple request, which avoids the CORS preflight
+      // that Apps Script cannot answer.
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ token: TOKEN, consultant, hubspotUrl })
+    });
+
+    const data = await res.json();
+
+    if (!data.ok) return fail(data.error || 'Could not generate the link.');
+
+    $('titleline').textContent = data.title;
+    $('link').textContent = data.meetLink;
+    $('open').href = data.meetLink;
+    $('record').href = hubspotUrl;
+    resBox.classList.add('show');
+    $('hubspot').value = '';
+
+  } catch (e) {
+    fail('Could not reach the server. Check your connection and try again.');
+  } finally {
+    busy(false);
+  }
+});
+
+$('copy').addEventListener('click', async () => {
+  const c = $('copy');
+  try {
+    await navigator.clipboard.writeText($('link').textContent);
+    c.textContent = 'Copied';
+    c.classList.add('done');
+    setTimeout(() => { c.textContent = 'Copy'; c.classList.remove('done'); }, 1800);
+  } catch {
+    const r = document.createRange();
+    r.selectNodeContents($('link'));
+    getSelection().removeAllRanges();
+    getSelection().addRange(r);
+  }
+});
+
+$('hubspot').addEventListener('keydown', e => { if (e.key === 'Enter') btn.click(); });
+</script>
+</body>
+</html>
