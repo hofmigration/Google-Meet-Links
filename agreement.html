@@ -1,0 +1,486 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HOF Agreement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --royal:#1f2f8f;      /* HOF royal blue */
+  --navy:#16205e;       /* HOF navy */
+  --steel:#868e9b;      /* HOF steel grey */
+  --ink:#16205e;
+  --body:#4a5262;
+  --soft:#868e9b;
+  --line:#e6e9f1;
+  --canvas:#f4f6fa;
+  --card:#ffffff;
+  --good:#1e7a4d; --goodbg:#e9f6ee;
+  --bad:#c0392b;  --badbg:#fdecea;
+  --warn:#b06a10;  --warnbg:#fff5e8;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--canvas);color:var(--body);
+  font:400 16px/1.55 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:600px;margin:0 auto;padding:0 0 60px}
+
+/* header — navy panel with the HOF mark, as on the portal */
+header{background:var(--navy);color:#fff;padding:22px 22px 26px;border-radius:0 0 var(--r) var(--r)}
+.mark{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;
+  background:var(--royal);border-radius:9px;font:800 16px/1 'Plus Jakarta Sans',sans-serif;color:#fff}
+header h1{margin:12px 0 0;font:800 21px/1.25 'Plus Jakarta Sans',sans-serif;letter-spacing:-.2px}
+header p{margin:5px 0 0;font-size:13px;color:#a8b0d4;font-weight:500}
+
+main{padding:0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 18px 20px;margin:14px 0;box-shadow:0 1px 2px rgba(22,32,94,.04)}
+
+.step{display:flex;align-items:center;gap:9px;margin:0 0 13px}
+.step i{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;flex:0 0 23px;
+  background:var(--navy);color:#fff;border-radius:7px;font:700 12px/1 'Plus Jakarta Sans',sans-serif;font-style:normal}
+.step b{font:700 15px/1.3 'Plus Jakarta Sans',sans-serif;color:var(--ink)}
+
+label{display:block;font:600 13px/1.4 'Plus Jakarta Sans',sans-serif;color:var(--ink);margin:14px 0 6px}
+input,select,textarea{width:100%;padding:13px 13px;font:400 16px/1.4 'Plus Jakarta Sans',sans-serif;
+  color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:10px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--royal);box-shadow:0 0 0 3px rgba(31,47,143,.12)}
+textarea{min-height:88px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#aab1bf}
+
+button{width:100%;padding:14px;margin-top:15px;border:0;border-radius:10px;
+  font:700 15px/1 'Plus Jakarta Sans',sans-serif;background:var(--navy);color:#fff}
+button:active{background:var(--royal)}
+button:disabled{background:#b8bdc9}
+button.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+button.ghost:active{border-color:var(--royal);color:var(--royal);background:#fff}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.row button{margin-top:0}
+
+/* a result row — a pill for the client or deal, tappable */
+.hit{border:1.5px solid var(--line);border-radius:11px;padding:13px 14px;margin:9px 0;background:#fff}
+.hit.sel{border-color:var(--royal);background:#f5f7ff;box-shadow:0 0 0 3px rgba(31,47,143,.08)}
+.hit b{display:block;font:700 15px/1.35 'Plus Jakarta Sans',sans-serif;color:var(--ink)}
+.hit span{display:block;margin-top:2px;font-size:13px;color:var(--soft);font-weight:500}
+
+.note{font-size:12.5px;line-height:1.6;color:var(--soft);margin:9px 0 0;font-weight:500}
+.msg{padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.55;margin:14px 0;font-weight:500}
+.msg.err{background:var(--badbg);color:var(--bad)}
+.msg.ok{background:var(--goodbg);color:var(--good)}
+.msg.warn{background:var(--warnbg);color:var(--warn)}
+.hide{display:none}
+.link{display:block;word-break:break-all;color:var(--royal);font-weight:700;font-size:14px;margin:9px 0;text-decoration:none}
+pre{background:var(--canvas);border:1px solid var(--line);border-radius:10px;padding:12px;
+  font:400 11.5px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--body);
+  white-space:pre-wrap;word-break:break-word;margin:11px 0}
+.chip{display:inline-block;background:var(--canvas);border:1px solid var(--line);border-radius:20px;
+  padding:6px 12px;font-size:12.5px;font-weight:600;color:var(--body);margin:4px 4px 0 0}
+details{margin-top:12px}
+summary{font:600 13px/1.4 'Plus Jakarta Sans',sans-serif;color:var(--soft);cursor:pointer}
+.stepline{display:block;font-size:12.5px;line-height:1.7;color:var(--body);padding:5px 0;border-bottom:1px solid var(--line)}
+.stepline.bad{color:var(--bad);font-weight:600}
+</style></head><body><div class="wrap">
+<header>
+  <a href="./" style="color:#a8b0d4;text-decoration:none;font-size:12.5px;font-weight:600">&larr; Back to the portal</a>
+  <div style="margin-top:10px"><span class="mark">H</span></div>
+  <h1>Agreement Generator</h1>
+  <p>HOF Migration &middot; create and send a client agreement</p>
+</header>
+<main>
+
+<!-- passcode -->
+<div id="gate" class="card">
+  <div class="step"><i>&#128274;</i><b>Sign in</b></div>
+  <label>Passcode</label>
+  <input id="code" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Team passcode">
+  <button id="go">Continue</button>
+  <p class="note">Ask Ali for the passcode. It is stored on this phone only.</p>
+</div>
+
+<div id="app" class="hide">
+  <!-- 1. find the client -->
+  <div class="card">
+  <div class="step"><i>1</i><b>Find the client</b></div>
+  <label>Client name or email</label>
+  <div class="row"><input id="q" placeholder="e.g. Muhammad Awais" autocomplete="off"><button id="find" style="flex:0 0 92px;margin-top:0">Search</button></div>
+  <div id="hits"></div>
+  </div>
+
+  <!-- 2. the deal -->
+  <div id="dealBox" class="hide card">
+    <div class="step"><i>2</i><b>Which deal</b></div>
+    <div id="deals"></div>
+  </div>
+
+  <!-- 3. the agreement -->
+  <div id="form" class="hide card">
+    <div class="step"><i>3</i><b>The agreement</b></div>
+    <label>Template</label>
+    <select id="template"></select>
+    <label>Agreement name</label>
+    <input id="title" placeholder="Muhammad Awais - USA EB2 NIW">
+    <label>Service / line item</label>
+    <input id="item" placeholder="EB2-NIW">
+    <div class="row">
+      <div><label>Amount</label><input id="amount" type="number" inputmode="decimal" placeholder="12000"></div>
+      <div><label>Currency</label><select id="currency"><option>AED</option><option>USD</option><option>PKR</option><option>EUR</option><option>GBP</option></select></div>
+    </div>
+    <label>Expires on</label>
+    <input id="expires" type="date">
+    <label>Tax</label>
+    <div class="row">
+      <input id="tax" type="number" inputmode="decimal" placeholder="5" step="0.01">
+      <select id="taxOn"><option value="1">Add tax</option><option value="0">No tax</option></select>
+    </div>
+    <p class="note" id="taxNote">Enter the percentage. Leave it blank for no tax.</p>
+
+    <label>Payments</label>
+    <div class="row">
+      <select id="nInst">
+        <option value="1">One payment in full</option>
+        <option value="2" selected>2 payments</option>
+        <option value="3">3 payments</option>
+        <option value="4">4 payments</option>
+        <option value="5">5 payments</option>
+        <option value="6">6 payments</option>
+      </select>
+      <button id="even" class="ghost" style="flex:0 0 118px">Split evenly</button>
+    </div>
+    <div id="balance"></div>
+    <div id="instBox"></div>
+    <p class="note">Amounts do not have to be equal &mdash; 4,000 then 3,000 then 3,000 is fine. Write when each payment is due in your own words (Upon receipt, Upon IEE, on signing) or pick a date. They must add up to the total.</p>
+    <label style="display:flex;align-items:center;gap:9px;font-weight:400;margin-top:12px">
+      <input type="checkbox" id="asLines" checked style="width:auto"> Show each payment as its own line on the agreement
+    </label>
+    <p class="note"><b>Why:</b> HubSpot will not let an outside tool build its Payment Schedule table &mdash; creating, editing and sharing one were all tested and all refused. The Terms field can be written but the USA NIW template does not display it. The Products table does display, so each payment goes there instead. The client sees every payment, its trigger, the subtotal, the tax and the total.<br><br>Untick this to show one service line at the full amount, and add the schedule in HubSpot yourself.</p>
+    <label>Extra terms <span style="font-weight:400;color:var(--soft)">— optional, shown on the agreement</span></label>
+    <textarea id="terms" placeholder="Anything else the client should see in writing."></textarea>
+    <label style="display:flex;align-items:center;gap:9px;font-weight:400;margin-top:14px">
+      <input type="checkbox" id="esign" checked style="width:auto"> Ask the client to e-sign
+    </label>
+    <label style="display:flex;align-items:center;gap:9px;font-weight:400;margin-top:10px">
+      <input type="checkbox" id="countersign" checked style="width:auto"> HOF countersigns it too
+    </label>
+    <p class="note" id="csNote">The countersigner is whoever owns the client in HubSpot.</p>
+    <button id="create">Create and publish · get the client link</button>
+    <button id="draftOnly" class="ghost">Save as draft (no client link)</button>
+  </div>
+
+  <div id="out"></div>
+  <div class="card">
+  <details>
+    <summary>Setup check &mdash; for Ali</summary>
+    <button id="diag" class="ghost">Check the HubSpot connection</button>
+    <div id="diagOut"></div>
+  </details>
+  </div>
+</div>
+
+</main></div>
+<script>
+// ===========================================================================
+// SET THIS ONCE: the Cloudflare Worker address, with no trailing slash.
+// It is on the Worker's page in Cloudflare, and looks like
+//   https://hof-agreement.<your-account>.workers.dev
+// The HubSpot token lives on the Worker, never in this page, which is why this
+// page is safe to host on GitHub Pages.
+// ===========================================================================
+const API = "https://hof-agreement.razaali.workers.dev";
+
+const $=(id)=>document.getElementById(id);
+let CODE=localStorage.getItem("hofCode")||"", picked=null, pickedDeal=null, TEMPLATES=[];
+
+const api=async(path,body)=>{
+  if(!API||/<your-account>/.test(API)) throw new Error("Set the API address at the top of this page first.");
+  const r=await fetch(API+path,{method:"POST",headers:{"Content-Type":"application/json","x-app-code":CODE},body:JSON.stringify(body||{})});
+  const d=await r.json();
+  if(!r.ok) throw new Error(d.error||"Something went wrong");
+  return d;
+};
+const say=(where,text,kind="err")=>{ $(where).innerHTML=`<div class="msg ${kind}">${text}</div>`; };
+const busy=(el,on,label)=>{ el.disabled=on; el.textContent=on?"Working...":label; };
+
+// ---- sign in
+$("go").onclick=async()=>{
+  CODE=$("code").value.trim();
+  if(!CODE) return;
+  busy($("go"),true,"Continue");
+  try{
+    const d=await api("/api/diagnose");
+    localStorage.setItem("hofCode",CODE);
+    TEMPLATES=d.templates||[];
+    fillTemplates(d);
+    $("gate").classList.add("hide"); $("app").classList.remove("hide");
+  }catch(e){ say("gate",e.message); }
+  busy($("go"),false,"Continue");
+};
+if(CODE) $("go").click();
+
+function fillTemplates(d){
+  const s=$("template"); s.innerHTML="";
+  const list=(d.templates||[]).filter(t=>t.active!=="false");
+  if(!list.length){ s.innerHTML='<option value="">No templates found</option>'; return; }
+  for(const t of list){ const o=document.createElement("option"); o.value=t.id; o.textContent=t.name;
+    if(t.type) o.dataset.type=t.type; s.appendChild(o); }
+}
+
+// ---- 1. find the client
+$("find").onclick=async()=>{
+  const q=$("q").value.trim();
+  if(q.length<2) return say("hits","Type at least two characters.","warn");
+  busy($("find"),true,"Search"); $("hits").innerHTML="";
+  try{
+    const d=await api("/api/search",{q});
+    if(!d.contacts.length) return say("hits","No client found with that name or email.","warn");
+    $("hits").innerHTML=d.contacts.map((c,i)=>
+      `<div class="hit" data-i="${i}"><b>${esc(c.name)}</b><span>${esc(c.email||"no email")}${c.phone?" · "+esc(c.phone):""}${c.leadStage?" · "+esc(c.leadStage):""}</span></div>`).join("");
+    [...$("hits").children].forEach(el=>{ if(!el.dataset.i) return;
+      el.onclick=()=>choose(d.contacts[+el.dataset.i],el); });
+    if(d.contacts.length===1) $("hits").firstElementChild.click();
+  }catch(e){ say("hits",e.message); }
+  busy($("find"),false,"Search");
+};
+$("q").addEventListener("keydown",e=>{ if(e.key==="Enter"){e.preventDefault();$("find").click();} });
+
+async function choose(c,el){
+  picked=c; pickedDeal=null;
+  [...$("hits").children].forEach(x=>x.classList.remove("sel"));
+  el.classList.add("sel");
+  $("title").value=`${c.name} - `;
+  $("dealBox").classList.remove("hide"); $("deals").innerHTML='<p class="note">Loading deals...</p>';
+  try{
+    const d=await api("/api/context",{contactId:c.id});
+    if(d.contact) picked.ownerId=d.contact.ownerId||null;
+    if(d.countersigner){
+      const cs=d.countersigner;
+      $("csNote").innerHTML = cs.error
+        ? `<span style="color:var(--warn)">No countersigner — ${esc(cs.error)}. The agreement will go out with the client's signature only.</span>`
+          +(cs.tried&&cs.tried.length?`<br><span style="font-size:11.5px;color:var(--soft)">${cs.tried.map(esc).join("<br>")}</span>`:"")
+        : `Countersigned by <b>${esc(cs.name)}</b> — ${esc(cs.from||"the record")}.`;
+    }
+    if(!d.deals.length){
+      $("deals").innerHTML='<div class="msg warn">This client has no deal. The agreement can still be created and linked to the client only.</div>';
+      $("form").classList.remove("hide"); return;
+    }
+    $("deals").innerHTML=d.deals.map((x,i)=>
+      `<div class="hit" data-i="${i}"><b>${esc(x.name)}</b><span>${x.amount?esc(x.amount):"no amount set"}</span></div>`).join("");
+    [...$("deals").children].forEach(el2=>{ if(!el2.dataset.i&&el2.dataset.i!=="0") return;
+      el2.onclick=()=>{ pickedDeal=d.deals[+el2.dataset.i];
+        if(pickedDeal.ownerId) picked.ownerId=pickedDeal.ownerId;
+        [...$("deals").children].forEach(x=>x.classList.remove("sel")); el2.classList.add("sel");
+        if(!$("amount").value&&pickedDeal.amount) $("amount").value=pickedDeal.amount;
+        $("form").classList.remove("hide"); }; });
+    if(d.deals.length===1) $("deals").firstElementChild.click();
+  }catch(e){ say("deals",e.message); }
+}
+
+// ---- 3. create
+async function submit(publish,btn,label){
+  // `publish` decides the wording below: a chosen draft is not a failure
+  if(!picked) return say("out","Pick a client first.","warn");
+  const body={
+    contactId:picked.id, dealId:pickedDeal?pickedDeal.id:null,
+    templateId:$("template").value,
+    templateType:($("template").selectedOptions[0]||{}).dataset?.type||"",
+    language:"en", locale:"en-US", title:$("title").value.trim(),
+    lineItemName:$("item").value.trim(), amount:$("amount").value,
+    currency:$("currency").value, expiresOn:$("expires").value,
+    terms:$("terms").value.trim(), esign:$("esign").checked,
+    taxPercent:($("taxOn").value==="1")?(parseFloat($("tax").value)||0):0,
+    installments:collectInstalments(),
+    paymentsAsLines:$("asLines").checked,
+    countersign:$("countersign").checked, ownerId:picked.ownerId||null, publish,
+  };
+  if(!body.expiresOn) return say("out","Set an expiry date.","warn");
+  if(!instalmentsBalance())
+    return say("out","The payments do not add up to the total. Adjust them, or tap Split evenly.","warn");
+  busy(btn,true,label);
+  try{
+    const r=await api("/api/quote",body); LAST={...r, contactId:picked.id, esign:body.esign};
+    const failed=(r.steps||[]).filter(s=>/could NOT|failed/i.test(s));
+    let html="";
+
+    if(r.link){
+      html+=`<div class="msg ok"><b>Agreement published.</b> Send the link below to the client.</div>`;
+      html+=`<label>Client link</label><a class="link" href="${r.link}" target="_blank">${esc(r.link)}</a>
+        <button class="ghost" onclick="navigator.clipboard.writeText('${r.link}');this.textContent='Copied'">Copy link</button>`;
+    } else if(!publish){
+      html+=`<div class="msg ok"><b>Saved as a draft.</b> A draft has no client link yet — that is normal. Publish it below when you are ready to send it.</div>
+        <button id="pub">Publish it now · get the client link</button>`;
+    } else {
+      html+=`<div class="msg warn"><b>The quote was created but could not be published.</b> It is saved in HubSpot as a draft, so nothing is lost. The reason is in the details below.</div>
+        <button id="pub">Try publishing again</button>
+        ${body.esign?`<button id="pubNoSign" class="ghost">Publish without e-signature</button>`:""}`;
+    }
+
+    html+=`<a class="link" href="${r.recordUrl}" target="_blank">Open the quote in HubSpot</a>`;
+
+    if(failed.length)
+      html+=`<div class="msg err"><b>${failed.length} step(s) did not work.</b> The agreement may be missing its template, deal or line item.</div>`;
+
+    html+=`<details${failed.length?" open":""}><summary>What the system did (${(r.steps||[]).length} steps)</summary><div style="margin-top:8px">`
+      +(r.steps||[]).map(s=>`<span class="stepline${/could NOT|failed/i.test(s)?" bad":""}">${esc(s)}</span>`).join("")
+      +`</div></details>`;
+    $("out").innerHTML=html;
+    if($("pub")) $("pub").onclick=()=>publishNow(false);
+    if($("pubNoSign")) $("pubNoSign").onclick=()=>publishNow(true);
+  }catch(e){ say("out",e.message); }
+  busy(btn,false,label);
+}
+
+// A draft can be published later without rebuilding it, so nobody has to redo the form.
+let LAST=null;
+async function publishNow(dropEsign){
+  if(!LAST) return;
+  const b=dropEsign?$("pubNoSign"):$("pub");
+  busy(b,true,dropEsign?"Publish without e-signature":"Publish it now · get the client link");
+  try{
+    const r=await api("/api/publish",{quoteId:LAST.quoteId,contactId:LAST.contactId,dropEsign:!!dropEsign});
+    let html=`<div class="msg ${r.published?"ok":"err"}"><b>${r.published?"Published.":"Still could not be published."}</b></div>`;
+    if(r.link) html+=`<label>Client link</label><a class="link" href="${r.link}" target="_blank">${esc(r.link)}</a>
+      <button class="ghost" onclick="navigator.clipboard.writeText('${r.link}');this.textContent='Copied'">Copy link</button>`;
+    html+=`<a class="link" href="${r.recordUrl||LAST.recordUrl}" target="_blank">Open the quote in HubSpot</a>`;
+    if(!r.published && !dropEsign && LAST.esign)
+      html+=`<button id="pubNoSign" class="ghost">Publish without e-signature</button>`;
+    html+=`<details open><summary>What the system did</summary><div style="margin-top:8px">`
+      +(r.steps||[]).map(s=>`<span class="stepline${/could NOT|failed|not published/i.test(s)?" bad":""}">${esc(s)}</span>`).join("")+`</div></details>`;
+    $("out").innerHTML=html;
+    if($("pubNoSign")) $("pubNoSign").onclick=()=>publishNow(true);
+  }catch(e){ say("out",e.message); }
+}
+$("create").onclick=()=>submit(true,$("create"),"Create and publish · get the client link");
+$("draftOnly").onclick=()=>submit(false,$("draftOnly"),"Save as draft (no client link)");
+
+// ---- setup check
+$("diag").onclick=async()=>{
+  busy($("diag"),true,"Check the HubSpot connection");
+  try{
+    const d=await api("/api/diagnose");
+    TEMPLATES=d.templates||[]; fillTemplates(d);
+    let h="";
+    h+=`<p class="note">Templates found: ${(d.templates||[]).length}</p>`;
+    h+=(d.templates||[]).map(t=>`<span class="chip">${esc(t.name)}${t.type?" · "+esc(t.type):""}</span>`).join("");
+    if(d.templatesError) h+=`<div class="msg err">Templates: ${esc(d.templatesError)}</div>`;
+    if(d.productsError) h+=`<div class="msg warn">Products: ${esc(d.productsError)}</div>`;
+    if(d.quotesError) h+=`<div class="msg warn">Quotes: ${esc(d.quotesError)}</div>`;
+    if(d.usersError) h+=`<div class="msg err"><b>Users could not be read</b> — the countersigner cannot be set until this works.<br>${esc(d.usersError)}</div>`;
+    else if(d.userFields){
+      h+=`<div class="msg ok">User records readable (${esc(d.usersObject)}) — ${esc(String(d.userCount||0))} users. Countersigners will work.</div>`;
+      if(d.userMap) h+=`<p class="note">If you ever lose the users scope, paste this into USER_IDS in worker.js:</p><pre>${esc(d.userMap).slice(0,3000)}</pre>`;
+    }
+    h+=`<pre>${esc(JSON.stringify(d.recentQuotes||[],null,1)).slice(0,1600)}</pre>`;
+    $("diagOut").innerHTML=h;
+  }catch(e){ say("diagOut",e.message); }
+  busy($("diag"),false,"Check the HubSpot connection");
+};
+// Instalments are held in state rather than read back off the page, so an amount or a
+// due note that a consultant has typed is never wiped when something else changes.
+// Amounts are free: 4000 / 3000 / 3000 is as valid as an even split.
+let INST = [];
+
+function taxedTotal(){
+  const amount=parseFloat($("amount").value)||0;
+  const pct=($("taxOn").value==="1")?(parseFloat($("tax").value)||0):0;
+  return Math.round(amount*(1+pct/100)*100)/100;
+}
+function splitLocal(total,n){
+  const cents=Math.round(total*100), each=Math.floor(cents/n);
+  const parts=Array(n).fill(each); parts[0]+=cents-each*n;
+  return parts.map(c=>(c/100).toFixed(2));
+}
+const money=(v)=>(Math.round((Number(v)||0)*100)/100).toFixed(2);
+
+// even split, used on first draw, when the count changes, and by the button
+function rebalance(){
+  const n=parseInt($("nInst").value,10)||1;
+  const parts=splitLocal(taxedTotal(),n);
+  INST=Array.from({length:n},(_,i)=>({
+    amount:parts[i],
+    text:INST[i]&&INST[i].text!==undefined?INST[i].text:(i===0?"Upon receipt":""),
+    date:INST[i]?INST[i].date:"",
+  }));
+  drawInstalments();
+}
+
+// keep the rows but leave the amounts alone, for when the count has not changed
+function resizeOnly(){
+  const n=parseInt($("nInst").value,10)||1;
+  if(INST.length===n){ drawInstalments(); return; }
+  rebalance();
+}
+
+function drawInstalments(){
+  const n=parseInt($("nInst").value,10)||1;
+  const total=taxedTotal();
+  if(n<2){
+    $("instBox").innerHTML="";
+    $("balance").innerHTML=total?`<p class="note">One payment of <b>${$("currency").value} ${money(total)}</b>${($("taxOn").value==="1"&&$("tax").value)?" including tax":""}.</p>`:"";
+    return;
+  }
+  let h="";
+  INST.forEach((it,i)=>{
+    h+=`<div class="hit" style="margin:9px 0">
+      <b style="margin-bottom:8px">Payment ${i+1}</b>
+      <div class="row">
+        <input id="a${i}" type="number" inputmode="decimal" step="0.01" value="${esc(it.amount)}" placeholder="amount" aria-label="Payment ${i+1} amount">
+        <input id="t${i}" value="${esc(it.text)}" placeholder="Upon receipt, Upon IEE, ..." aria-label="Payment ${i+1} when">
+      </div>
+      <input id="d${i}" type="date" value="${esc(it.date)}" style="margin-top:8px" aria-label="Payment ${i+1} date">
+    </div>`;
+  });
+  $("instBox").innerHTML=h;
+
+  // typing in a row updates state, not the other way round
+  INST.forEach((_,i)=>{
+    const a=$("a"+i), t=$("t"+i), d=$("d"+i);
+    if(a) a.oninput=()=>{ INST[i].amount=a.value; showBalance(); };
+    if(t) t.oninput=()=>{ INST[i].text=t.value; };
+    if(d) d.oninput=()=>{ INST[i].date=d.value; };
+  });
+  showBalance();
+}
+
+// HubSpot refuses a schedule that does not add up, so the shortfall is shown plainly
+function showBalance(){
+  const n=parseInt($("nInst").value,10)||1;
+  if(n<2) return;
+  const total=taxedTotal();
+  const assigned=INST.reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+  const left=Math.round((total-assigned)*100)/100;
+  const cur=$("currency").value;
+  $("balance").innerHTML=
+    `<div class="msg ${left===0?"ok":"warn"}" style="margin:10px 0">
+      ${cur} ${money(total)} total${($("taxOn").value==="1"&&$("tax").value)?" including tax":""} &middot;
+      assigned ${cur} ${money(assigned)} &middot;
+      <b>${left===0?"nothing left to assign":`${left>0?"still to assign":"over by"} ${cur} ${money(Math.abs(left))}`}</b>
+    </div>`;
+}
+
+function collectInstalments(){
+  const n=parseInt($("nInst").value,10)||1;
+  if(n<2) return null;
+  return INST.map((it,i)=>({
+    label:`Payment ${i+1}`,
+    amount:money(it.amount),
+    dueDate:it.date||null,
+    dueText:(it.text||"").trim()||null,
+  }));
+}
+function instalmentsBalance(){
+  const n=parseInt($("nInst").value,10)||1;
+  if(n<2) return true;
+  const assigned=INST.reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+  return Math.round((taxedTotal()-assigned)*100)===0;
+}
+
+$("nInst").addEventListener("change",resizeOnly);
+$("even").onclick=(e)=>{ e.preventDefault(); rebalance(); };
+["amount","tax","taxOn","currency"].forEach(id=>{
+  const el=$(id); if(!el) return;
+  el.addEventListener("input",()=>{ rebalance(); });
+  el.addEventListener("change",()=>{ rebalance(); });
+});
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+// default expiry: 90 days out, matching the HubSpot default
+(()=>{const d=new Date();d.setDate(d.getDate()+90);$("expires").value=d.toISOString().slice(0,10);})();
+</script></body></html>
