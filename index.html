@@ -418,6 +418,29 @@
           </div>
 
           <div class="group">
+            <div class="glabel">What kind of meeting</div>
+            <label class="field">
+              <span class="flabel">Meeting type</span>
+              <select id="mvType">
+                <option value="general">General meeting</option>
+                <option value="brainstorm">Brainstorm session</option>
+              </select>
+              <p class="hint">A brainstorm records who is on it, so the meeting shows up against that writer and case manager on the dashboard.</p>
+            </label>
+
+            <div id="mvBrainstorm" class="hidden">
+              <label class="field">
+                <span class="flabel">Petition writer</span>
+                <select id="mvWriter"><option value="">Select the writer&hellip;</option></select>
+              </label>
+              <label class="field">
+                <span class="flabel">Case manager</span>
+                <select id="mvCM"><option value="">Select the case manager&hellip;</option></select>
+              </label>
+            </div>
+          </div>
+
+          <div class="group">
             <div class="glabel">When</div>
             <div class="mv-when">
               <button type="button" id="mvNow" class="is-on">Starting now</button>
@@ -742,6 +765,21 @@
   var MEET_API_URL = "https://script.google.com/macros/s/AKfycbw08RhhNO6NN4ydhM3-A1KdCHIPU1ZhWhMrF3GQNgubulnXCTERpLjQrBsqjDHYNxg5BA/exec";
   var MEET_TOKEN   = "1q2w3e4r5t6y7u8i9o0p";
 
+  /* Petition writers who can take a brainstorm. Names only. */
+  var MV_WRITERS = [
+    'Aleena Najeeb', 'Umme Aimon', 'Tahir Khalil', 'Kushra', 'Faryal Khalid',
+    'Fatima Khalid', 'Aliza Ejaz', 'Samra Goraya', 'Samina Naseer',
+    'Kysha Jade', 'Stella', 'Sashalene', 'Yvette', 'Neline'
+  ];
+
+  /* Case managers, spelled as HubSpot spells them. The dashboard groups by this
+     name, so a different spelling here becomes a different person there. */
+  var MV_CASE_MANAGERS = [
+    'Ali Tariq', 'Anwar Saeed', 'Brenda Murowanidzwa', 'Hashim Tahir',
+    'Maryam Chand', 'Muhammad Zaryab', 'Rahima Nabili', 'Tamjeed Zahid',
+    'Thushara M S', 'Umer Masaud', 'Warda Badar', 'Yamina Sadi'
+  ];
+
   var g = function (id) { return document.getElementById(id); };
 
   /* ---------- hero copy, captured from the page so nothing is hardcoded ---------- */
@@ -851,6 +889,15 @@
       return fail('That is not a deal or contact record. Open the record in HubSpot and copy the address from your browser bar.');
     }
 
+    var mType = g('mvType').value;
+    var mWriter = '', mCM = '';
+    if (mType === 'brainstorm') {
+      mWriter = g('mvWriter').value;
+      mCM     = g('mvCM').value;
+      if (!mWriter) return fail('Choose the petition writer for this brainstorm session.');
+      if (!mCM)     return fail('Choose the case manager for this brainstorm session.');
+    }
+
     busy(true);
 
     fetch(MEET_API_URL, {
@@ -858,7 +905,10 @@
       /* text/plain keeps this a simple request, which avoids the CORS
          preflight that Apps Script cannot answer. */
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ token: MEET_TOKEN, hubspotUrl: url, startAt: startAt })
+      body: JSON.stringify({
+        token: MEET_TOKEN, hubspotUrl: url, startAt: startAt,
+        meetingType: mType, writer: mWriter, caseManager: mCM
+      })
     })
     .then(function (r) { return r.json(); })
     .then(function (d) {
@@ -889,6 +939,23 @@
     })
     .then(function () { busy(false); });
   }
+
+  /* Fill the two dropdowns, and show them only for a brainstorm. */
+  (function () {
+    function fillSel(id, names, placeholder) {
+      var sel = g(id);
+      if (!sel) return;
+      sel.innerHTML = '<option value="">' + placeholder + '</option>' +
+        names.map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join('');
+    }
+    fillSel('mvWriter', MV_WRITERS, 'Select the writer\u2026');
+    fillSel('mvCM', MV_CASE_MANAGERS, 'Select the case manager\u2026');
+
+    g('mvType').addEventListener('change', function () {
+      g('mvBrainstorm').classList.toggle('hidden', g('mvType').value !== 'brainstorm');
+      clearErr();
+    });
+  })();
 
   g('mvBtn').addEventListener('click', generate);
   g('mvUrl').addEventListener('keydown', function (e) {
